@@ -2,36 +2,45 @@ const http = require('http');
 const url = require('url');
 const fs = require('fs');
 const port = process.env.PORT || 8080;
-
+const homePage = fs.readFileSync('./index.html');
+const aboutPage = fs.readFileSync('./about.html');
+const contactPage = fs.readFileSync('./contact.html');
+const errorPage = fs.readFileSync('./404.html');
+const styles = fs.readFileSync('./styles.css');
+const stylesJs = fs.readFileSync('./uiScript.js');
 http
   .createServer((req, res) => {
-    const q = url.parse(req.url, true);
-    const pathName = q.pathname;
-    let fileName;
+    const url = req.url;
+    console.log(url);
     if (
-      pathName == '/' ||
-      pathName == '/index.html' ||
-      pathName == 'index' ||
-      pathName == 'home.html' ||
-      pathName == 'home'
+      url == '/' ||
+      url == '/home' ||
+      url == '/index.html' ||
+      url == '/index'
     ) {
-      fileName = './index.html';
-    } else if (pathName == '/about.html' || pathName == 'about') {
-      fileName = './about.html';
-    } else if (pathName == '/contact.html' || pathName == 'contact') {
-      fileName = './contact.html';
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.write(homePage);
+      res.end();
+    } else if (url == '/about' || url == '/about.html') {
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.write(aboutPage);
+      res.end();
+    } else if (url == '/contact' || url == '/contact.html') {
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.write(contactPage);
+      res.end();
+    } else if (url == '/styles.css') {
+      res.writeHead(200, { 'Content-Type': 'text/css' });
+      res.write(styles);
+      res.end();
+    } else if (url == '/uiScript.js') {
+      res.writeHead(200, { 'Content-Type': 'text/js' });
+      res.write(stylesJs);
+      res.end();
     } else {
-      fileName = './404.html';
+      res.writeHead(404, { 'Content-Type': 'text/html' });
+      res.write(errorPage);
+      res.end();
     }
-    fs.readFile(fileName, (err, data) => {
-      if (err) {
-        res.writeHead(404, { 'Content-Type': 'text/html' });
-      } else {
-        res.writeHead(200, { 'Content-Type': 'text/html' });
-      }
-
-      res.write(data);
-      return res.end();
-    });
   })
   .listen(port);
